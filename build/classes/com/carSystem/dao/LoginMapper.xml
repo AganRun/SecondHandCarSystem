@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.carSystem.dao.LoginMapper">
+
+	<!-- 获取最大的login_id -->
+	<select id="getMaxLogin_id" resultType="java.lang.String">
+		select MAX(login_id) from login
+	</select>
+	
+	<!-- 注册添加login信息 -->
+	<insert id="addLogin" parameterType="com.carSystem.entity.Login">
+		insert into login (login_id, login_password, login_permission)
+		values( #{login_id}, #{login_password}, #{login_permission} )
+	</insert>
+
+	<!-- 通过id查询login表单信息 -->
+	<select id="queryLoginById" resultType="com.carSystem.entity.Login" parameterType="java.lang.String">
+		select * from login where login_id = #{ value }
+	</select>
+	
+	<!-- 保存login信息（用于修改密码）-->
+	<update id="saveLogin" parameterType="com.carSystem.entity.Login">
+		update login set login_password =#{login_password} where login_id = #{login_id}
+	</update>
+
+
+</mapper>

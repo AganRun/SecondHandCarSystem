@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.carSystem.dao.PriceMapper">
+	
+	<!-- 获取最大的id -->
+	<select id="getMaxId" resultType="java.lang.String">
+		select MAX(price_classify_id) from price_classify
+	</select>
+
+	<!-- 获取排序后的全部价格 -->
+	<select id="getAllPrice" resultType="com.carSystem.entity.Price_classify">
+		select * from price_classify order by price_classify_num
+	</select>
+	
+	<!-- 添加分类价格区间 -->
+	<insert id="addPrice" parameterType="com.carSystem.entity.Price_classify">
+		insert into price_classify ( price_classify_id, price_classify_num )values( #{price_classify_id}, #{price_classify_num} )
+	</insert>
+	
+	<!-- 根据id删除某个价格区间 -->
+	<delete id="deletePrice" parameterType="java.lang.String">
+		delete from price_classify where price_classify_id = #{value}
+	</delete>
+</mapper>

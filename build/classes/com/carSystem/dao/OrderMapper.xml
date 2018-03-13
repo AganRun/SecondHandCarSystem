@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.carSystem.dao.OrderMapper">
+
+	<!-- 获取最大的订单id -->
+	<select id="getMaxId" resultType="java.lang.String">
+		select MAX(order_id) from orderEntity
+	</select>
+	
+	<!-- 根据id获得订单信息 -->
+	<select id="queryOrderById" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name,car_img from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and order_id = #{value}
+	</select>
+	
+	<!-- (用户)获得全部未支付订单 -->
+	<select id="userQueryAllNotPayOrder" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where orderEntity.order_person_id = #{value} and  car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = "0" order by orderEntity.order_addtime DESC
+	</select>
+	
+	<!-- 获得全部未支付订单 -->
+	<select id="queryAllNotPayOrder" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = "0" order by orderEntity.order_addtime DESC
+	</select>
+	
+	<!-- 根据id获得未支付订单 -->
+	<select id="queryNotPayOrderById" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and  orderEntity.order_status_pay = "0" and order_id = #{value}
+	</select>
+	
+	<!-- （用户）获得全部已经支付未发货订单 -->
+	<select id="userQueryAllPayOrder" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where orderEntity.order_person_id = #{value} and  car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = "1" and orderEntity.order_status_send = "0" order by orderEntity.order_time_pay DESC
+	</select>
+	
+	<!-- 获得全部已经支付未发货订单 -->
+	<select id="queryAllPayOrder" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = "1" and orderEntity.order_status_send = "0" order by orderEntity.order_time_pay DESC
+	</select>
+	
+	<!-- (商家)获得全部已经支付未发货订单 -->
+	<select id="shopQueryAllPayOrder" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = "1" and orderEntity.order_status_send = "0"
+		and car_shop_id = #{ value } order by orderEntity.order_time_pay DESC
+	</select>
+	
+	<!-- 根据id获得全部已经支付未发货订单 -->
+	<select id="queryPayOrderById" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = '1' and orderEntity.order_status_send = "0" and order_id = #{value}
+	</select>
+	
+	<!-- 根据id或name获得全部已经支付未发货订单 -->
+	<select id="queryPayOrderByIdOrName" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = '1' and orderEntity.order_status_send = "0" 
+		and ( orderEntity.order_id like CONCAT('%',#{order_id},'%') or car.car_name like CONCAT('%',#{order_id},'%') ) 
+		GROUP BY orderEntity.order_id order by orderEntity.order_time_pay DESC
+	</select>
+	
+	<!-- （商家）根据id获得全部已经支付未发货订单 -->
+	<select id="shopQueryPayOrderById" parameterType="com.carSystem.entity.Order" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = '1' and orderEntity.order_status_send = "0" and order_id = #{order_id}
+		and order_shop_id = #{ order_shop_id }
+	</select>
+	
+	<!-- （商家）根据id或者name模糊查询已经支付未发货订单 -->
+	<select id="shopQueryPayOrderByIdOrName" parameterType="com.carSystem.entity.Order" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_pay = '1' and orderEntity.order_status_send = "0" and order_shop_id = #{ order_shop_id }  
+		and ( orderEntity.order_id like CONCAT('%',#{order_id},'%') or car.car_name like CONCAT('%',#{order_id},'%') ) 
+		GROUP BY orderEntity.order_id order by orderEntity.order_time_pay DESC
+	</select>
+	
+	<!-- (用户)获得全部已经发货未收货订单 -->
+	<select id="userQueryAllSendOrder" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where orderEntity.order_person_id = #{value} and  car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_send = "1" and orderEntity.order_status_receive = "0" order by orderEntity.order_time_send DESC
+	</select>
+	
+	<!-- 获得全部已经发货未收货订单 -->
+	<select id="queryAllSendOrder" resultType="com.carSystem.entity.Order" >
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_send = "1" and orderEntity.order_status_receive = "0" order by orderEntity.order_time_send DESC
+	</select>
+	
+	<!-- （商家）获得全部已经发货未收货订单 -->
+	<select id="shopQueryAllSendOrder" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_send = "1" and orderEntity.order_status_receive = "0" 
+		and order_shop_id = #{ value } order by orderEntity.order_time_send DESC
+	</select>
+	
+	<!-- 根据id获得已经发货未收货订单 -->
+	<select id="querySendOrderById" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_send = "1" and orderEntity.order_status_receive = "0" and order_id = #{value}
+	</select>
+	
+	<!-- 根据id或name获得已经发货未收货订单 -->
+	<select id="querySendOrderByIdOrName" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_send = "1" and orderEntity.order_status_receive = "0" 
+		and ( orderEntity.order_id like CONCAT('%',#{order_id},'%') or car.car_name like CONCAT('%',#{order_id},'%') ) 
+		GROUP BY orderEntity.order_id order by orderEntity.order_time_send DESC
+	</select>
+	
+	<!-- (商家)根据id获得已经发货未收货订单 -->
+	<select id="shopQuerySendOrderById" parameterType="com.carSystem.entity.Order" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_send = "1" and orderEntity.order_status_receive = "0" and order_id = #{order_id} 
+	    and order_shop_id = #{ order_shop_id }
+	</select>
+	
+	<!-- (商家)根据id或name获得已经发货未收货订单 -->
+	<select id="shopQuerySendOrderByIdOrName" parameterType="com.carSystem.entity.Order" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_send = "1" and orderEntity.order_status_receive = "0" and order_shop_id = #{ order_shop_id } 
+		and ( orderEntity.order_id like CONCAT('%',#{order_id},'%') or car.car_name like CONCAT('%',#{order_id},'%') ) 
+		GROUP BY orderEntity.order_id order by orderEntity.order_time_send DESC
+	</select>
+	
+	<!-- （用户）获得全部已经收货未删除的订单 -->
+	<select id="userQueryAllReceiveOrder" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where orderEntity.order_person_id = #{value} and  car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_receive = "1" and  orderEntity.order_status_delete = "1" order by orderEntity.order_time_receive DESC
+	</select>
+	
+	<!-- 查询全部已经收获未删除的订单 -->
+	<select id="queryAllReceiveOrder" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_receive = "1" and  orderEntity.order_status_delete = "1" order by orderEntity.order_time_receive DESC
+	</select>
+	
+	<!-- (商家)查询全部已经收获未删除的订单 -->
+	<select id="shopQueryAllReceiveOrder" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_receive = "1" and  orderEntity.order_status_delete = "1" 
+		and order_shop_id = #{ value } order by orderEntity.order_time_receive DESC
+	</select>
+	
+	<!-- 根据id查询已经收获未删除的订单 -->
+	<select id="queryReceiveOrderById" resultType="com.carSystem.entity.Order" parameterType="java.lang.String" >
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_receive = "1" and  orderEntity.order_status_delete = "1" and order_id = #{value}
+	</select>
+	
+	<!-- 根据id或name查询已经收获未删除的订单 -->
+	<select id="queryReceiveOrderByIdOrName" resultType="com.carSystem.entity.Order" parameterType="java.lang.String" >
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_receive = "1" and  orderEntity.order_status_delete = "1" 
+		and ( orderEntity.order_id like CONCAT('%',#{order_id},'%') or car.car_name like CONCAT('%',#{order_id},'%') ) 
+		GROUP BY orderEntity.order_id order by orderEntity.order_time_receive DESC
+	</select>
+	
+	<!-- （商家）根据id查询已经收获未删除的订单 -->
+	<select id="shopQueryReceiveOrderById" resultType="com.carSystem.entity.Order" parameterType="com.carSystem.entity.Order" >
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_receive = "1" and  orderEntity.order_status_delete = "1" and order_id = #{order_id} 
+		and order_shop_id = #{ order_shop_id }
+	</select>
+	
+	<!-- （商家）根据id或nane模糊查询已经收获未删除的订单 -->
+	<select id="shopQueryReceiveOrderByIdOrName" resultType="com.carSystem.entity.Order" parameterType="com.carSystem.entity.Order" >
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_receive = "1" and  orderEntity.order_status_delete = "1" and order_shop_id = #{ order_shop_id } 
+		and ( orderEntity.order_id like CONCAT('%',#{order_id},'%') or car.car_name like CONCAT('%',#{order_id},'%') ) 
+		GROUP BY orderEntity.order_id order by orderEntity.order_time_receive DESC
+	</select>
+	
+	<!-- （用户）获得全部回收站订单 -->
+	<select id="userQueryAllDeleteOrder" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where orderEntity.order_person_id = #{value} and  car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_delete = "0" order by orderEntity.order_time_delete DESC
+	</select>
+	
+	<!-- 获得全部回收站订单 -->
+	<select id="queryAllDeleteOrder" resultType="com.carSystem.entity.Order" >
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_delete = "0" order by orderEntity.order_time_delete DESC
+	</select>
+	
+	<!-- (商家)获得全部回收站订单 -->
+	<select id="shopQueryAllDeleteOrder" parameterType="java.lang.String" resultType="com.carSystem.entity.Order" >
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_delete = "0"
+		and order_shop_id = #{ value } order by orderEntity.order_time_delete DESC
+	</select>
+	
+	<!-- 根据id获得回收站订单 -->
+	<select id="queryDeleteOrderById" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_delete = "0" and orderEntity.order_id = #{value}
+	</select>
+	
+	<!-- 根据id或name获得回收站订单 -->
+	<select id="queryDeleteOrderByIdOrName" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_delete = "0" 
+		and ( orderEntity.order_id like CONCAT('%',#{order_id},'%') or car.car_name like CONCAT('%',#{order_id},'%') ) 
+		GROUP BY orderEntity.order_id order by orderEntity.order_time_delete DESC
+	</select>
+	
+	<!-- (商家)根据id获得回收站订单 -->
+	<select id="shopQueryDeleteOrderById" resultType="com.carSystem.entity.Order" parameterType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_delete = "0" and orderEntity.order_id = #{order_id} 
+		and order_shop_id = #{order_shop_id}
+	</select>
+	
+	<!-- (商家)根据id或name模糊获得回收站订单 -->
+	<select id="shopQueryDeleteOrderByIdOrName" resultType="com.carSystem.entity.Order" parameterType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id 
+		and orderEntity.order_status_delete = "0" and order_shop_id = #{order_shop_id} 
+		and ( orderEntity.order_id like CONCAT('%',#{order_id},'%') or car.car_name like CONCAT('%',#{order_id},'%') ) 
+		GROUP BY orderEntity.order_id order by orderEntity.order_time_delete DESC
+	</select>
+	
+	<!-- 增加订单 -->
+	<insert id="addOrder" parameterType="com.carSystem.entity.Order">
+		insert into orderEntity ( order_id, order_car_id, order_shop_id, order_person_id, order_message, order_addtime, order_address, order_tel, order_person_name  )
+		values( #{order_id}, #{order_car_id}, #{order_shop_id}, #{order_person_id}, #{order_message}, #{order_addtime}, #{order_address}, #{order_tel}, #{order_person_name} )
+	</insert>
+	
+	<!-- 付款操作 -->
+	<update id="payOrder" parameterType="com.carSystem.entity.Order">
+		update orderEntity set order_status_pay = #{order_status_pay} , order_time_pay = #{order_time_pay} where order_id = #{order_id}
+	</update>
+	
+	<!-- 根据id将用户的订单发货 -->
+	<update id="sendOrderById" parameterType="com.carSystem.entity.Order">
+		update orderEntity set order_status_send = #{order_status_send} , order_time_send = #{order_time_send} where order_id = #{order_id}
+	</update>
+	
+	<!-- 根据id将用户的订单收货 -->
+	<update id="orderToReceive" parameterType="com.carSystem.entity.Order">
+		update orderEntity set order_status_receive = #{order_status_receive} , order_time_receive = #{order_time_receive} where order_id = #{order_id}
+	</update>
+	
+	<!-- 用户根据id删除历史订单 -->
+	<update id="orderDeleteHistory" parameterType="com.carSystem.entity.Order">
+		update orderEntity set order_status_delete = #{order_status_delete} , order_time_delete = #{order_time_delete} where order_id = #{order_id}
+	</update>
+	
+	<!-- 根据id彻底删除回收站的订单 -->
+	<delete id="orderDeleteById" parameterType="java.lang.String">
+		delete from orderEntity where order_id = #{ value }
+	</delete>
+	
+	<!-- 根据月份进行销售统计 -->
+	<select id="saleOrderByMonth" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car 
+		where car.car_id = orderEntity.order_car_id and orderEntity.order_status_receive = "1"  
+		and order_time_receive like  CONCAT('%',#{value},'-%')  
+	</select>
+
+	<!-- 根据品牌进行销售统计 -->
+	<select id="saleOrderByBrand" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car,brand 
+		where car.car_id = orderEntity.order_car_id and brand.brand_id = car.car_brand_id and orderEntity.order_status_receive = "1" 
+		and brand.brand_id = #{value}
+	</select>	
+	
+	<!-- (商家)的时间统计订单 -->
+	<select id="shopSaleOrderTime" resultType="com.carSystem.entity.Order" parameterType="java.lang.String">
+		select car.car_price_new,orderEntity.* from orderEntity,car 
+		where orderEntity.order_shop_id = #{ value } 
+		and orderEntity.order_status_receive = "1" 
+		and orderentity.order_car_id = car.car_id 
+	</select>
+	
+	<!-- (商家)的品牌统计订单 -->
+	<select id="shopSaleOrderByBrand" parameterType="java.lang.String" resultType="com.carSystem.entity.Order">
+		select car.car_price_new,car.car_brand_id, orderEntity.* from orderEntity,car 
+		where orderEntity.order_car_id = car.car_id 
+		and orderEntity.order_status_receive = "1 "
+		and orderEntity.order_shop_id = #{ value }
+	</select>
+	
+	<!-- (商家)根据具体品牌进行销售统计 -->
+	<select id="shopSaleOrderByBrandId" resultType="com.carSystem.entity.Order" parameterType="com.carSystem.entity.Order">
+		select orderEntity.*,car.car_price_new,car.car_name from orderEntity,car,brand 
+		where car.car_id = orderEntity.order_car_id and brand.brand_id = car.car_brand_id and orderEntity.order_status_receive = "1" 
+		and brand.brand_id = #{car_brand_id } and orderEntity.order_shop_id = #{ order_shop_id}
+	</select>	
+	
+	
+	
+</mapper>

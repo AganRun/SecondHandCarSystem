@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.carSystem.dao.CarMapper">
+
+	<!-- 查询全部在售车辆（其中装填品牌名称） -->
+	<select id="queryAllOnlineCar" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 1 order by car.car_time_shelf DESC
+	</select>
+	
+	<!-- （商家）查询全部在售车辆（其中装填品牌名称） -->
+	<select id="shopQueryAllOnlineCar" resultType="com.carSystem.entity.Car" parameterType="java.lang.String">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 1 and car.car_shop_id = #{ value } order by car.car_time_shelf DESC
+	</select>
+	
+	
+	<!-- 根据id查询在售车辆 -->
+	<select id="queryOnlineCarById" parameterType="java.lang.String" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 1 and car.car_id = #{value}
+	</select>
+	
+	<!-- 根据id或name模糊查询在售车辆 -->
+	<select id="queryOnlineCarByIdOrName" parameterType="java.lang.String" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 1 
+		and ( car.car_id like  CONCAT('%',#{car_id},'%') or car.car_name like CONCAT('%',#{car_id},'%') )
+		GROUP BY car.car_id order by car.car_time_shelf DESC 
+	</select>
+	
+	<!-- （商家）根据id查询在售车辆 -->
+	<select id="shopQueryOnlineCarById" parameterType="com.carSystem.entity.Car" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 1 and car.car_id = #{car_id}  and car.car_shop_id = #{ car_shop_id }
+	</select>
+	
+	<!-- （商家）根据id或者name模糊查询在售车辆 -->
+	<select id="shopQueryOnlineCarByIdOrName" parameterType="com.carSystem.entity.Car" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where car.car_shop_id = #{ car_shop_id } and ( car.car_id like  CONCAT('%',#{car_id},'%') or car.car_name like CONCAT('%',#{car_id},'%') ) 
+		and car.car_brand_id = brand.brand_id and car.car_status_sell = 1  
+		GROUP BY car.car_id order by car.car_time_shelf DESC 
+	</select>
+	
+	<!-- 添加车辆 -->
+	<insert id="addCar" parameterType="com.carSystem.entity.Car">
+		insert into car 
+		(car_id, car_img, car_name, car_brand_id, car_price_old, car_price_new, car_time_buy, car_time_shelf, car_opera_id, car_status_sell, car_shop_id )
+		values( #{car_id},#{car_img},  #{car_name}, #{car_brand_id}, #{car_price_old}, #{car_price_new}, #{car_time_buy}, #{car_time_shelf}, #{car_opera_id}, #{car_status_sell}, #{car_shop_id} )
+	</insert>
+	
+	<!-- 获取最大的car_id -->
+	<select id="getMaxCarId" resultType="java.lang.String">
+		select MAX(car_id) from car
+	</select>
+	
+	<!-- 保存修改后的在线汽车信息 -->
+	<update id="saveCar" parameterType="com.carSystem.entity.Car">
+		update car set 
+		car_name = #{car_name}, car_img = #{car_img}, car_brand_id = #{car_brand_id}, car_price_old = #{car_price_old}, car_price_new = #{car_price_new}, car_time_buy = #{car_time_buy}, car_status_recommend=#{car_status_recommend} 
+		where car_id = #{car_id}
+	</update>
+	
+	<!-- 根据编号将车辆下架 -->
+	<update id="carDownShelf" parameterType="com.carSystem.entity.Car">
+		update car set
+		car_opera_delete_id = #{car_opera_delete_id}, car_time_delete = #{car_time_delete}, car_status_sell = #{car_status_sell} 
+		where car_id = #{car_id}
+	</update>
+	
+	<!-- 查询全部下架车辆 -->
+	<select id="queryAllDownShelfCar" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 0  order by car.car_time_delete DESC
+	</select>
+	
+	<!-- (商家)查询全部下架车辆 -->
+	<select id="shopQueryAllDownShelfCar" resultType="com.carSystem.entity.Car" parameterType="java.lang.String">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 0 and car_shop_id = #{ value }   order by car.car_time_delete DESC
+	</select>
+	
+	<!-- 根据id查询下架车辆 -->
+	<select id="queryDownShelfCarById" parameterType="java.lang.String" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 0 and car.car_id = #{value}
+	</select>
+	
+	<!-- 根据id查询下架车辆 -->
+	<select id="queryDownShelfCarByIdOrName" parameterType="java.lang.String" resultType="com.carSystem.entity.Car">	
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 0 
+		and ( car.car_id like  CONCAT('%',#{car_id},'%') or car.car_name like CONCAT('%',#{car_id},'%') )
+		GROUP BY car.car_id order by car.car_time_delete DESC 
+	</select>
+	
+	<!-- (商家)根据id查询下架车辆 -->
+	<select id="shopQueryDownShelfCarById" parameterType="com.carSystem.entity.Car" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where car.car_brand_id = brand.brand_id and car.car_status_sell = 0 and car.car_id = #{car_id } and car_shop_id = #{ car_shop_id }
+	</select>
+
+	<!-- (商家)根据id或者name模糊查询下架车辆  -->
+	<select id="shopQueryDownShelfCarByIdOrName" parameterType="com.carSystem.entity.Car" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car where ( car.car_id like  CONCAT('%',#{car_id},'%') or car.car_name like CONCAT('%',#{car_id},'%') ) 
+		and car.car_brand_id = brand.brand_id and car.car_status_sell = 0 and car_shop_id = #{ car_shop_id }  
+		GROUP BY car.car_id order by car.car_time_delete DESC 
+	</select>
+
+	<!-- 将车辆上架 -->
+	<update id="carUpShelfById" parameterType="com.carSystem.entity.Car">
+		update car set
+		car_time_shelf = #{car_time_shelf}, car_status_sell = #{car_status_sell} 
+		where car_id = #{car_id}
+	</update>
+
+	<!-- 根据id彻底删除车辆信息 -->
+	<delete id="carDelete" parameterType="java.lang.String">
+		delete from car where car_id = #{value}
+	</delete>
+	
+	<!-- 改变是否推荐状态 -->
+	<update id="changeRecommandStatus" parameterType="com.carSystem.entity.Car">
+		update car set car_status_recommend = #{car_status_recommend} where car_id = #{car_id}
+	</update>
+	
+	<!-- 根据最低价和最高价和上架时间查询在线车辆 -->
+	<select id="queryOnlineCarByLowAndHighAndTimeShelf" resultType="com.carSystem.entity.Car" parameterType="com.carSystem.entity.ShopQuery">
+		select brand.brand_name, car.* from brand, car 
+		where car.car_brand_id = brand.brand_id and car.car_status_sell = 1 
+		and car.car_price_new &lt;  #{highPrice} and car.car_price_new  &gt; #{lowPrice}  
+		and car.car_time_shelf between #{ time_start } and #{ time_end }   order by car.car_time_shelf DESC
+	</select>
+	
+	<!-- 根据最低价和最高价和品牌和上架时间查询在线车辆 -->
+	<select id="queryOnlineCarByLowAndHighAndBrandIdAndTimeShelf" resultType="com.carSystem.entity.Car" parameterType="com.carSystem.entity.ShopQuery">
+		select brand.brand_name, car.* from brand, car 
+		where car.car_brand_id = brand.brand_id and car.car_status_sell = 1 
+		and car.car_price_new &lt;  #{highPrice} and car.car_price_new  &gt; #{lowPrice} and car.car_brand_id = #{ brand_id} 
+		and car.car_time_shelf between #{ time_start } and #{ time_end }   order by car.car_time_shelf DESC
+	</select>
+	
+	<!-- 查询全部管理员推荐车辆（在售） -->
+	<select id="queryAllRecommandCar" resultType="com.carSystem.entity.Car">
+		select brand.brand_name, car.* from brand, car 
+		where car.car_brand_id = brand.brand_id and car.car_status_sell = 1 and car.car_status_recommend = '1'  order by car.car_time_shelf DESC
+	</select>
+
+
+</mapper>

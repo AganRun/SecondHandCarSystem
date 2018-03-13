@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.carSystem.dao.ShopCartMapper">
+
+	<!-- 获取最大的购物车id -->
+	<select id="getMAXShopCartId" resultType="java.lang.String">
+		select MAX(shopCart_id) from shopCart 
+	</select>
+	
+	<!-- 根据用户的id查询全部的购物车信息 -->
+	<select id="getAllByPersonId" parameterType="java.lang.String" resultType="com.carSystem.entity.ShopCart">
+		select shopCart.*,car.car_img, car.car_name, car.car_price_new from shopCart, car where car.car_id = shopCart.shopCart_car_id 
+		and shopCart.shopCart_person_id = #{ value }
+	</select>
+	
+	<!-- 添加购物车 -->
+	<insert id="addShopCart" parameterType="com.carSystem.entity.ShopCart">
+		insert into shopCart ( shopCart_id, shopCart_car_id, shopCart_person_id, shopCart_addtime) 
+		values( #{shopCart_id}, #{shopCart_car_id}, #{shopCart_person_id}, #{shopCart_addtime} )
+	</insert>
+	
+	<!-- 删除全部购物车 -->
+	<delete id="deleteAll">
+		delete from shopCart where 1 = 1
+	</delete>
+	
+	<!-- 根据id删除购物车 -->
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from shopCart where shopCart_id = #{value}
+	</delete>
+
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.carSystem.dao.PersonMapper">
+
+	<!-- 注册时添加用户 -->
+	<insert id="addPerson" parameterType="com.carSystem.entity.Person">
+		insert into person (person_id, person_name, person_time_register, person_tel)
+		values( #{person_id}, #{person_name}, #{person_time_register}, #{person_tel} )
+	</insert>
+	
+	<!-- 注册时检测手机号是否已经存在 -->
+	<select id="textTelExist" parameterType="java.lang.String" resultType="java.lang.String">
+		select person_id from person where person_tel = #{value}
+	</select>
+	
+	<!-- 获取最大的person_id -->
+	<select id="getMaxPerson_id" resultType="java.lang.String">
+		select  MAX(person_id) from person
+	</select>
+	
+	<!-- 通过id查询person -->
+	<select id="queryPersonById" resultType="com.carSystem.entity.Person" parameterType="java.lang.String">
+		select * from person where person_id = #{value}
+	</select>
+	
+	<!-- 保存修改后的person数据 -->
+	<update id="saveUpdatePersonInfo" parameterType="com.carSystem.entity.Person">
+		update person 
+		set person_name = #{person_name}, person_gender = #{person_gender}, person_tel = #{person_tel}, 
+		person_address = #{person_address}, person_email = #{person_email}, person_time_register = #{person_time_register} 
+		where person_id = #{person_id}
+	</update>
+
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.carSystem.dao.BrandMapper">
+
+	<!-- 获取最大的brand_id -->
+	<select id="getMaxBrandId" resultType="java.lang.String">
+		select MAX(brand_id) from brand
+	</select>
+	
+	<!-- 添加brand -->
+	<insert id="addBrand" parameterType="com.carSystem.entity.Brand">
+		insert into brand (brand_id, brand_name, brand_be_query)
+		values( #{brand_id}, #{brand_name}, #{brand_be_query} )
+	</insert>
+	
+	<!-- 通过id查询brand -->
+	<select id="queryBrandById" parameterType="java.lang.String" resultType="com.carSystem.entity.Brand">
+		select * from brand where brand_id = #{ value }
+	</select>
+	
+	<!-- 查询全部brand -->
+	<select id="queryAllBrand" resultType="com.carSystem.entity.Brand">
+		select * from brand where 1 = 1
+	</select>
+	
+	<!-- 保存修改后的品牌信息 -->
+	<update id="saveBrand" parameterType="com.carSystem.entity.Brand">
+		update brand set 
+		brand_name = #{brand_name}, brand_be_query =#{brand_be_query}, 
+		brand_saleNum_month1 = #{brand_saleNum_month1},brand_saleNum_month2 = #{brand_saleNum_month2}, brand_saleNum_month3 = #{brand_saleNum_month3}, brand_saleNum_month4 = #{brand_saleNum_month4}, brand_saleNum_month5 = #{brand_saleNum_month5}, brand_saleNum_month6 = #{brand_saleNum_month6}, brand_saleNum_month7 = #{brand_saleNum_month7}, brand_saleNum_month8 = #{brand_saleNum_month8}, brand_saleNum_month9 = #{brand_saleNum_month9}, brand_saleNum_month10 = #{brand_saleNum_month10}, brand_saleNum_month11 = #{brand_saleNum_month11}, brand_saleNum_month12 = #{brand_saleNum_month12},  
+		brand_salePrice_month1 = #{brand_salePrice_month1},brand_salePrice_month2 = #{brand_salePrice_month2}, brand_salePrice_month3 = #{brand_salePrice_month3}, brand_salePrice_month4 = #{brand_salePrice_month4}, brand_salePrice_month5 = #{brand_salePrice_month5}, brand_salePrice_month6 = #{brand_salePrice_month6}, brand_salePrice_month7 = #{brand_salePrice_month7}, brand_salePrice_month8 = #{brand_salePrice_month8}, brand_salePrice_month9 = #{brand_salePrice_month9}, brand_salePrice_month10 = #{brand_salePrice_month10}, brand_salePrice_month11 = #{brand_salePrice_month11}, brand_salePrice_month12 = #{brand_salePrice_month12} 
+		where brand_id = #{brand_id}
+	</update>
+	
+	<!-- 根据编号删除某个品牌 -->
+	<delete id="deleteBrand" parameterType="java.lang.String">
+		delete from brand where brand_id = #{ brand_id }
+	</delete>
+	
+	<!-- 修改品牌的是否可查询状态 -->
+	<update id="changeStatus" parameterType="com.carSystem.entity.Brand">
+		update brand set brand_be_query = #{brand_be_query} where brand_id = #{brand_id}
+	</update>
+	
+	<!-- 查询全部可以被用户搜索的品牌 -->
+	<select id="queryBeQueryBrand" resultType="com.carSystem.entity.Brand">
+		select * from brand where brand_be_query = 'true'
+	</select>
+
+</mapper>
