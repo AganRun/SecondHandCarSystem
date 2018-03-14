@@ -1,0 +1,83 @@
+备注：
+	Stirng在数据库中用的varchar
+	自顶向下，为个人建表顺序
+	如果有少量信息与数据库sql表有出入，以数据库的为准，如有笔误，在此道歉。
+
+表中栏位--类型--长度--中文解释--(默认值)
+
+login--登录表
+	login_id--String--11--登录id（主键）
+	login_password--Stirng--20--登录密码	解释：(登录密码设定最大长度为20,表单中以此为限制)
+	login_permission--String--5--用户权限（用户：user，管理员：admin，商家：shop）
+
+person--用户信息表
+	person_id--String--11--用户id（和login_id保持一致，主键）
+	person_name--Stirng--10--姓名
+	person_gender--String--2--性别
+	person_tel--String--11--手机号码
+	person_address--String--30--地址
+	person_email--String--25--邮箱
+	person_time_register--String--20--注册时间（注册时添加，不可更改）
+	
+	
+brand--品牌表（总的）
+	brand_id--String--11--品牌id（主键）
+	brand_name--String--20--品牌名称
+	brand_be_query--String--6--是否可以被用户查询（true可以被查询，false不可被查询）--true
+	brand_saleNum_month1--int--11--一月份销售数量--0	(用户收货时才会更新)
+	…………2--11…………
+	brand_saleNum_month12--int--11--十二月份销售数量--0
+	brand_salePrice_month1--String--20--一月份销售价钱--0		解释：(害怕销量太多，长期考虑，int以后会溢出，所以用String)
+	…………2--11…………
+	brand_salePrice_month12--String--20--十二月份销售价钱--0	
+	
+	
+car--二手车信息表
+	car_id--Stirng--11--汽车编号（主键）
+	car_img--String--150--汽车图片路径
+	car_name--String--30--品牌型号名称
+	car_brand_id--Stirng--11--对应品牌的id
+	car_shop_id--String-11--商家编号
+	car_price_old--int--11--原价（元）
+	car_price_new--int--11--现价
+	car_time_buy--String--20--购买时间（管理员添加车辆时输入）
+	car_time_shelf--String--20--上架时间（后台记录）
+	car_opera_id--String--11--操作人id
+	car_status_sell--String--1--在售状态（1，在售，0，下架）
+	car_time_delete--String--20--下架时间（管理员下架时，后台记录）
+	car_opera_delete_id--String--11--删除操作人id
+	car_status_recommend--Stirng--1--是否为管理员推荐车辆（商城置顶推荐）（1，推荐，0，不推荐）
+
+	
+price_classify--价格分类表（管理员允许的用户价格分类）
+	price_classify_id--String--11--价格分类id（主键）
+	price_classify_num--int--11--价格（元）
+	
+	
+shopCart--购物车表
+	shopCart_id--String--11--购物车id（主键）
+	shopCart_car_id--String--11--收藏汽车id
+	shopCart_person_id--String--11--添加收藏的用户id
+	shopCart_addtime--String--20--购物车添加时间
+
+	
+orderEntity--订单信息表			（一个订单只选择了存放一个汽车，毕竟汽车价格不菲，也没有论批发的，我也看了一下相关二手车网的选购，貌似也没有选择数量）
+	order_id--String--11--编号（主键）
+	order_car_id--String--11--汽车id
+	order_person_id--String--11--顾客id
+	order_shop_id--String--11--商家id
+	order_message--String--30--顾客备注信息	
+	order_addtime--String--20--订单生成时间
+	order_address--String--50--交易地址
+	order_tel--String--11--预留手机号码（默认为用户tel）
+	order_person_name--String--10--预留姓名
+	order_status_pay--String--1--支付状态（0，未支付，1，已支付）--0
+	order_time_pay--String--20--支付时间
+	order_status_send--Stirng--1--发货状态（0，未发货，1，已发货）--0
+	order_time_send--String--20--发货时间
+	order_status_receive--String--1--收货状态（0，未收货，1，已经收货）--0
+	order_time_receive--String--20--收货时间
+	order_status_delete--String--1--删除状态（0，已删除，1，未删除）--1
+	order_time_delete--String--20--删除时间
+
+
